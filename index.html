@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>전 세계 195개국 완벽 환생 테스트</title>
+  <style>
+    :root {
+      --bg-color: #fffbeb;
+      --card-bg: #ffffff;
+      --primary-color: #f59e0b;
+      --primary-hover: #d97706;
+      --text-color: #451a03;
+      --sub-text: #78350f;
+      --accent-bg: #fef3c7;
+    }
+
+    body {
+      font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .container {
+      background-color: var(--card-bg);
+      max-width: 680px;
+      width: 100%;
+      padding: 40px 30px;
+      border-radius: 24px;
+      box-shadow: 0 10px 25px rgba(180, 83, 9, 0.12);
+      text-align: center;
+      border: 3px solid #fde68a;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      color: var(--text-color);
+    }
+
+    p.subtitle {
+      font-size: 1.2rem;
+      color: var(--sub-text);
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 16px 36px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    .result-box {
+      display: none;
+      margin-top: 30px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .flag {
+      font-size: 6rem;
+      line-height: 1;
+      margin: 15px 0;
+    }
+
+    .country-name {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--primary-hover);
+      margin-bottom: 10px;
+    }
+
+    .description {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      background-color: var(--accent-bg);
+      padding: 18px;
+      border-radius: 16px;
+      margin-bottom: 25px;
+      color: var(--text-color);
+    }
+
+    .story-card {
+      text-align: left;
+      background-color: #fff8f0;
+      border-left: 6px solid var(--primary-color);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+
+    .story-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: var(--sub-text);
+    }
+
+    .story-content {
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="start-screen">
+      <h1>🌍 전 세계 195개국 환생 🌍</h1>
+      <p class="subtitle">지구상 모든 국가의 인구 비율을 완벽하게 반영한 환생 시뮬레이터입니다.</p>
+      <button class="btn" onclick="reincarnate()">🎲 다음 생으로 환생하기</button>
+    </div>
+
+    <div id="result-screen" class="result-box">
+      <div id="flag" class="flag"></div>
+      <div id="country-name" class="country-name"></div>
+      <div id="description" class="description"></div>
+
+      <div class="story-card">
+        <div class="story-title">👤 당신의 가상 인생 스토리</div>
+        <div id="story-content" class="story-content"></div>
+      </div>
+
+      <button class="btn" onclick="reincarnate()">🔄 다시 고르기</button>
+    </div>
+  </div>
+
+  <script>
+    // 전 세계 195개국 인구 가중치(weight) 및 데이터
+    const countries = [
+      { name: "인도", weight: 14286, flag: "🇮🇳", desc: "세계 1위의 인구를 자랑하는 남아시아의 역동적인 거대 국가입니다." },
+      { name: "중국", weight: 14117, flag: "🇨🇳", desc: "유구한 역사와 거대한 시장을 가진 동아시아의 대국입니다." },
+      { name: "미국", weight: 3399, flag: "🇺🇸", desc: "세계 경제와 문화를 선도하는 북미의 다문화 국가입니다." },
+      { name: "인도네시아", weight: 2775, flag: "🇮🇩", desc: "수많은 섬으로 이루어진 동남아시아의 활기찬 나라입니다." },
+      { name: "파키스탄", weight: 2405, flag: "🇵🇰", desc: "웅장한 힌두쿠시 산맥과 전통을 간직한 남아시아 국가입니다." },
+      { name: "나이지리아", weight: 2238, flag: "🇳🇬", desc: "아프리카 대륙 최대의 인구와 에너지를 가진 나라입니다." },
+      { name: "브라질", weight: 2164, flag: "🇧🇷", desc: "아마존 열대우림과 삼바, 축구의 열정이 넘치는 남미 국가입니다." },
+      { name: "방글라데시", weight: 1729, flag: "🇧🇩", desc: "의류 산업이 매우 발달한 동남아시아 접경 국가입니다." },
+      { name: "러시아", weight: 1444, flag: "🇷🇺", desc: "세계에서 가장 넓은 영토를 자랑하는 유라시아 강국입니다." },
+      { name: "멕시코", weight: 1284, flag: "🇲🇽", desc: "아즈텍·마야 문명의 유산과 풍부한 문화를 간직한 나라입니다." },
+      { name: "에티오피아", weight: 1265, flag: "🇪🇹", desc: "커피의 고향이자 독자적인 역사와 전통을 자랑하는 아프리카 국가입니다." },
+      { name: "일본", weight: 1232, flag: "🇯🇵", desc: "전통과 고도화된 첨단 기술이 함께 공존하는 동아시아 섬나라입니다." },
+      { name: "필리핀", weight: 1173, flag: "🇵🇭", desc: "아름다운 에메랄드빛 바다와 친절한 국민성이 매력적인 국가입니다." },
+      { name: "이집트", weight: 1127, flag: "🇪🇬", desc: "피라미드와 나일강의 고대 문명을 품은 북아프리카 중심국입니다." },
+      { name: "DR 콩고", weight: 1022, flag: "🇨🇩", desc: "풍부한 지하자원과 열대우림을 품은 중앙아프리카 국가입니다." },
+      { name: "베트남", weight: 988, flag: "🇻🇳", desc: "눈부신 경제 성장과 미식 문화로 유명한 동남아 국가입니다." },
+      { name: "이란", weight: 891, flag: "🇮🇷", desc: "찬란한 페르시아 문명의 역사와 전통을 이어받은 나라입니다." },
+      { name: "튀르키예", weight: 858, flag: "🇹🇷", desc: "동양과 서양이 만나는 지리적·문화적 요충지입니다." },
+      { name: "독일", weight: 832, flag: "🇩🇪", desc: "유럽 최대의 경제국이자 정교한 제조업 기술을 가진 나라입니다." },
+      { name: "태국", weight: 718, flag: "🇹🇭", desc: "미소의 나라로 불리며 불교 문화가 깊게 자리 잡은 휴양국입니다." },
+      { name: "탄자니아", weight: 674, flag: "🇹🇿", desc: "킬리만자로산과 세렌게티 국립공원을 품은 동아프리카 국가입니다." },
+      { name: "영국", weight: 677, flag: "🇬🇧", desc: "산업혁명의 발상지이자 문화·금융을 이끄는 섬나라입니다." },
+      { name: "프랑스", weight: 647, flag: "🇫🇷", desc: "예술과 미식, 패션의 세계적 중심지인 서유럽 국가입니다." },
+      { name: "남아프리카 공화국", weight: 604, flag: "🇿🇦", desc: "아프리카 대륙 최남단의 무지개 국가입니다." },
+      { name: "이탈리아", weight: 588, flag: "🇮🇹", desc: "로마 제국의 역사와 찬란한 문화유산을 보유한 남유럽 국가입니다." },
+      { name: "케냐", weight: 551, flag: "🇰🇪", desc: "사파리 관광과 마라톤 강국으로 잘 알려진 동아프리카 국가입니다." },
+      { name: "미얀마", weight: 545, flag: "🇲🇲", desc: "수많은 황금 탑과 풍부한 자원을 가진 동남아 국가입니다." },
+      { name: "콜롬비아", weight: 520, flag: "🇨🇴", desc: "질 좋은 커피와 열정적인 문화가 인상적인 남미 국가입니다." },
+      { name: "대한민국", weight: 517, flag: "🇰🇷", desc: "세계적인 K-컬처와 높은 치안 수준, 첨단 IT 인프라를 가진 나라입니다." },
+      { name: "우간다", weight: 485, flag: "🇺🇬", desc: "아프리카의 진주라 불리며 아름다운 자연을 품은 나라입니다." },
+      { name: "수단", weight: 481, flag: "🇸🇩", desc: "나일강 줄기를 따라 오랜 역사를 간직해 온 아프리카 국가입니다." },
+      { name: "스페인", weight: 475, flag: "🇪🇸", desc: "플라멩코와 건축가 가우디의 예술이 살아 숨 쉬는 정열의 나라입니다." },
+      { name: "아르헨티나", weight: 457, flag: "🇦🇷", desc: "탱고와 광활한 팜파스 평원을 가진 남미의 거대 국가입니다." },
+      { name: "알제리", weight: 456, flag: "🇩🇿", desc: "아프리카 대륙에서 가장 넓은 영토를 가진 북아프리카 국가입니다." },
+      { name: "이라크", weight: 455, flag: "🇮🇶", desc: "메소포타미아 문명의 발상지에 위치한 나라입니다." },
+      { name: "아프가니스탄", weight: 422, flag: "🇦🇫", desc: "험준한 산악 지형과 다채로운 부족 문화를 지닌 국가입니다." },
+      { name: "폴란드", weight: 410, flag: "🇵🇱", desc: "동유럽의 중심지로 풍부한 역사와 전통을 품고 있습니다." },
+      { name: "캐나다", weight: 387, flag: "🇨🇦", desc: "광활한 대자연과 안전하고 포용적인 사회를 자랑하는 북미 국가입니다." },
+      { name: "모로코", weight: 378, flag: "🇲🇦", desc: "사하라 사막과 사막 도시의 이국적 풍경을 간직한 북아프리카 국가입니다." },
+      { name: "사우디아라비아", weight: 369, flag: "🇸🇦", desc: "중동의 거대한 석유 강국이자 이슬람 성지를 품은 나라입니다." },
+      { name: "우크라이나", weight: 367, flag: "🇺🇦", desc: "동유럽의 곡창 지대로 불리는 비옥한 토지의 국가입니다." },
+      { name: "앙골라", weight: 366, flag: "🇦🇴", desc: "풍부한 석유와 광물 자원을 바탕으로 발전하는 아프리카 국가입니다." },
+      { name: "우즈베키스탄", weight: 360, flag: "🇺🇿", desc: "실크로드의 유적과 찬란한 이슬람 건축물을 품은 중앙아시아 국가입니다." },
+      { name: "예멘", weight: 344, flag: "🇾🇪", desc: "아라비아반도 남단에 위치하며 오랜 역사를 지닌 고대 도시들이 있습니다." },
+      { name: "모잠비크", weight: 338, flag: "🇲🇿", desc: "인도양 연안의 아름다운 해변을 가진 동아프리카 국가입니다." },
+      { name: "가나", weight: 341, flag: "🇬🇭", desc: "카카오 생산지로 유명하며 안정적인 민주주의를 이룬 서아프리카 국가입니다." },
+      { name: "페루", weight: 343, flag: "🇵🇪", desc: "잉카 문명의 고도 마추픽추를 보유한 남미의 역사적 국가입니다." },
+      { name: "말레이시아", weight: 343, flag: "🇲🇾", desc: "다양한 인종과 문화가 어우러진 동남아시아의 경제 강국입니다." },
+      { name: "네팔", weight: 308, flag: "🇳🇵", desc: "세계 최고봉 에베레스트산을 품은 히말라야의 나라입니다." },
+      { name: "마다가스카르", weight: 303, flag: "🇲🇬", desc: "바오밥 나무와 희귀 야생동물이 가득한 신비로운 섬나라입니다." },
+      { name: "코트디부아르", weight: 288, flag: "🇨🇮", desc: "세계 최대의 카카오 생산국인 서아프리카 국가입니다." },
+      { name: "베네수엘라", weight: 288, flag: "🇻🇪", desc: "세계 최대급의 매장량을 자랑하는 석유 보유국이자 남미 국가입니다." },
+      { name: "카메룬", weight: 286, flag: "🇨🇲", desc: '아프리카의 축소판이라 불릴 만큼 다채로운 지형과 문화를 가졌습니다.' },
+      { name: "니제르", weight: 272, flag: "🇳🇪", desc: "사하라 사막 남단에 위치한 아프리카의 내륙국입니다." },
+      { name: "호주", weight: 264, flag: "🇦🇺", desc: "캥거루와 코알라, 청정 대자연이 살아있는 대륙 국가입니다." },
+      { name: "조선민주주의인민공화국", weight: 261, flag: "🇰🇵", desc: "한반도 북부에 위치한 폐쇄적인 체제의 국가입니다." },
+      { name: "마리", weight: 232, flag: "🇲🇱", desc: "고대 톰북투 문명의 유적을 보유한 서아프리카 내륙국입니다." },
+      { name: "부르키나파소", weight: 232, flag: "🇧🇫", desc: "서아프리카의 내륙국으로 다채로운 문화 예술 축제가 열립니다." },
+      { name: "시리아", weight: 232, flag: "🇸🇾", desc: "고대 중동 문명의 수많은 흔적을 간직한 국가입니다." },
+      { name: "스리랑카", weight: 219, flag: "🇱🇰", desc: "실론티(홍차)로 유명하며 실론섬에 위치한 아름다운 나라입니다." },
+      { name: "말라위", weight: 209, flag: "🇲🇼", desc: "거대한 말라위 호수를 품고 있어 아프리카의 따뜻한 심장이라 불립니다." },
+      { name: "잠비아", weight: 205, flag: "🇿🇲", desc: "장엄한 빅토리아 폭포를 품은 남아프리카의 내륙국입니다." },
+      { name: "루마니아", weight: 190, flag: "🇷🇴", desc: "드라큘라 전설과 드넓은 카르파티아산맥으로 유명한 동유럽 국가입니다." },
+      { name: "칠레", weight: 196, flag: "🇨🇱", desc: "남북으로 가늘고 길게 늘어선 안데스산맥의 남미 국가입니다." },
+      { name: "카자흐스탄", weight: 196, flag: "🇰🇿", desc: "세계 최대의 내륙국이자 중앙아시아의 경제 중심국입니다." },
+      { name: "차드", weight: 182, flag: "🇹🇩", desc: "아프리카 대륙 중앙에 위치한 중앙아프리카 국가입니다." },
+      { name: "소말리아", weight: 181, flag: "🇸🇴", desc: "아프리카의 뿔 지역에 위치한 아프리카 국가입니다." },
+      { name: "네덜란드", weight: 176, flag: "🇳🇱", desc: "풍차, 튤립, 그리고 운하가 상징인 서유럽의 개방적인 나라입니다." },
+      { name: "세네갈", weight: 177, flag: "🇸🇳", desc: "서아프리카의 관문으로 해안선과 풍부한 음악 문화가 발전했습니다." },
+      { name: "과테말라", weight: 180, flag: "🇬🇹", desc: "고대 마야 문명의 유적과 아름다운 화산 호수가 있는 중미 국가입니다." },
+      { name: "캄보디아", weight: 169, flag: "🇰🇭", desc: "세계적인 문화유산 앙코르와트를 품은 동남아시아 국가입니다." },
+      { name: "에콰도르", weight: 180, flag: "🇪🇨", desc: "갈라파고스 제도를 품고 있으며 적도가 지나는 남미 국가입니다." },
+      { name: "짐바브웨", weight: 166, flag: "🇿🇼", desc: "빅토리아 폭포와 신비로운 돌 유적을 품은 남아프리카 국가입니다." },
+      { name: "기니", weight: 141, flag: "🇬🇳", desc: "서아프리카에 위치하며 풍부한 보크사이트 광물을 보유하고 있습니다." },
+      { name: "르완다", weight: 140, flag: "🇷🇼", desc: "천 개의 언덕의 나라로 불리며 빠른 경제 성장을 이루고 있습니다." },
+      { name: "베냉", weight: 137, flag: "🇧🇯", desc: "서아프리카의 관문으로 부두교 문화의 본고장으로 유명합니다." },
+      { name: "부룬디", weight: 132, flag: "🇧🇮", desc: "동아프리카 내륙에 위치한 고원 지대의 국가입니다." },
+      { name: "볼리비아", weight: 123, flag: "🇧🇴", desc: "우유니 사막으로 유명한 남미 고지대의 내륙국입니다." },
+      { name: "튀니지", weight: 124, flag: "🇹🇳", desc: "카르타고 유적과 지중해 해변을 자랑하는 북아프리카 국가입니다." },
+      { name: "아이티", weight: 117, flag: "🇭🇹", desc: "카리브해에 위치한 최초의 흑인 공화국입니다." },
+      { name: "벨기에", weight: 116, flag: "🇧🇪", desc: "초콜릿과 와플, 그리고 EU 본부가 위치한 서유럽 국가입니다." },
+      { name: "요르단", weight: 113, flag: "🇯🇴", desc: "페트라 유적과 사해 바다로 잘 알려진 중동 국가입니다." },
+      { name: "도미니카 공화국", weight: 113, flag: "🇩🇴", desc: "카리브해의 휴양지와 야구 강국으로 유명한 국가입니다." },
+      { name: "아랍에미리트", weight: 95, flag: "🇦🇪", desc: "두바이와 아부다비를 보유한 현대적이고 화려한 중동 국가입니다." },
+      { name: "쿠바", weight: 112, flag: "🇨🇺", desc: "클래식 카와 살사 음악, 카리브해의 낭만이 가득한 나라입니다." },
+      { name: "남수단", weight: 110, flag: "🇸🇸", desc: "2011년 수단으로부터 독립한 지구상 가장 젊은 국가 중 하나입니다." },
+      { name: "온두라스", weight: 106, flag: "🇭🇳", desc: "아름다운 산호초 해변과 마야 유적을 가진 중미 국가입니다." },
+      { name: "체코", weight: 105, flag: "🇨🇿", desc: "프라하의 로맨틱한 풍경과 맥주로 유명한 Central Europe 국가입니다." },
+      { name: "스웨덴", weight: 105, flag: "🇸🇪", desc: "북유럽 복지 모델과 아름다운 자연을 갖춘 나라이며 IKEA의 고향입니다." },
+      { name: "포르투갈", weight: 102, flag: "🇵🇹", desc: "유럽 대륙 최서단에 위치하며 해양 탐험의 역사를 간직한 나라입니다." },
+      { name: "아제르바이잔", weight: 101, flag: "🇦🇿", desc: "불의 나라라 불리며 코카서스 산맥 부근에 위치한 산유국입니다." },
+      { name: "그리스", weight: 103, flag: "🇬🇷", desc: "서양 문명의 발상지이자 산토리니 섬으로 대표되는 남유럽 국가입니다." },
+      { name: "헝가리", weight: 96, flag: "🇭🇺", desc: "부다페스트의 야경과 온천으로 유명한 Central Europe 국가입니다." },
+      { name: "토고", weight: 90, flag: "🇹🇬", desc: "서아프리카 기니만에 위치한 작고 아름다운 해안 국가입니다." },
+      { name: "이스라엘", weight: 91, flag: "🇮🇱", desc: "예루살렘의 고대 역사와 첨단 테크 스타트업이 공존하는 나라입니다." },
+      { name: "오스트리아", weight: 89, flag: "🇦🇹", desc: "비엔나 클래식 음악과 알프스 산맥이 유명한 예술의 나라입니다." },
+      { name: "벨라루스", weight: 95, flag: "🇧🇾", desc: "울창한 숲과 호수를 품은 동유럽의 내륙국입니다." },
+      { name: "스위스", weight: 88, flag: "🇨🇭", desc: "알프스의 장엄한 풍경과 신뢰도 높은 금융, 중립국으로 유명합니다." },
+      { name: "시에라리온", weight: 87, flag: "🇸🇱", desc: "다이아몬드 매장지와 아름다운 대서양 해변을 품은 나라입니다." },
+      { name: "라오스", weight: 76, flag: "🇱🇦", desc: "동남아의 유일한 내륙국으로 평화롭고 순수한 자연을 간직하고 있습니다." },
+      { name: "투르크메니스탄", weight: 65, flag: "🇹🇲", desc: "지옥의 문으로 불리는 가스 구덩이가 위치한 중앙아시아 국가입니다." },
+      { name: "리비아", weight: 68, flag: "🇱🇾", desc: "북아프리카 지중해 연안에 위치하며 석유 자원이 풍부한 나라입니다." },
+      { name: "키르기스스탄", weight: 70, flag: "🇰🇬", desc: "중앙아프리카의 스위스로 불리는 웅장한 톈산산맥을 품은 나라입니다." },
+      { name: "파라과이", weight: 68, flag: "🇵🇾", desc: "남미 대륙 중앙에 위치한 평화로운 내륙 국가입니다." },
+      { name: "니카라과", weight: 70, flag: "🇳🇮", desc: "중앙아메리카에서 가장 넓은 면적과 거대한 호수를 품은 국가입니다." },
+      { name: "불가리아", weight: 64, flag: "🇧🇬", desc: "장미 오일 생산과 발칸반도의 전통문화를 지닌 나라입니다." },
+      { name: "서사하라", weight: 60, flag: "🇪🇭", desc: "북아프리카 대서양 연안의 분쟁 지역 및 사막지대입니다." },
+      { name: "콩고 공화국", weight: 61, flag: "🇨🇬", desc: "중앙아프리카 콩고강 유역에 위치한 열대우림의 나라입니다." },
+      { name: "덴마크", weight: 59, flag: "🇩🇰", desc: "안데르센 동화의 고향이자 행복 지수가 높은 북유럽 국가입니다." },
+      { name: "핀란드", weight: 55, flag: "🇫🇮", desc: "자작나무 숲과 산타클로스의 마을이 위치한 북유럽 국가입니다." },
+      { name: "슬로바키아", weight: 54, flag: "🇸🇰", desc: "아름다운 고성과 타트라산맥을 품은 동유럽 국가입니다." },
+      { name: "노르웨이", weight: 55, flag: "🇳🇴", desc: "웅장한 피오르드 해안선과 오로라를 볼 수 있는 북유럽 강국입니다." },
+      { name: "오만", weight: 46, flag: "🇴🇲", desc: "아라비아반도 끝자락에 위치하며 고유의 이슬람 전통을 잘 보존한 나라입니다." },
+      { name: "팔레스타인", weight: 53, flag: "🇵🇸", desc: "중동의 역사적 갈등 중심지에 위치한 가자지구 및 서안지구입니다." },
+      { name: "라이베리아", weight: 54, flag: "🇱🇷", desc: "아프리카 최초의 독립 공화국으로 대서양 연안에 위치합니다." },
+      { name: "아일랜드", weight: 50, flag: "🇮🇪", desc: "초록빛 들판과 친근한 PUB 문화가 유명한 북서유럽 섬나라입니다." },
+      { name: "중앙아프리카 공화국", weight: 57, flag: "🇨🇫", desc: "아프리카 대륙 한가운데 위치한 풍부한 야생동물의 고향입니다." },
+      { name: "뉴질랜드", weight: 52, flag: "🇳🇿", desc: "청정 대자연과 마오리족 문화가 어우러진 남반구 섬나라입니다." },
+      { name: "모리타니", weight: 48, flag: "🇲🇷", desc: "국토의 대부분이 사하라 사막으로 이루어진 서아프리카 국가입니다." },
+      { name: "파나마", weight: 45, flag: "🇵🇦", desc: "태평양과 대서양을 연결하는 파나마 운하로 유명한 중미 국가입니다." },
+      { name: "쿠웨이트", weight: 43, flag: "🇰🇼", desc: "페르시아만에 위치하며 풍부한 석유를 바탕으로 한 유복한 중동국입니다." },
+      { name: "크로아티아", weight: 40, flag: "🇭🇷", desc: "아드리아해의 보석이라 불리는 두브로브니크 유적이 유명한 나라입니다." },
+      { name: "몰도바", weight: 34, flag: "🇲🇩", desc: "동유럽에 위치하며 와인 제조업이 크게 발전한 나라입니다." },
+      { name: "Georgia (조지아)", weight: 37, flag: "🇬🇪", desc: "코카서스 산맥과 세계 최초의 와인 발상지로 불리는 나라입니다." },
+      { name: "에리트레아", weight: 37, flag: "🇪🇷", desc: "홍해 연안에 위치한 아프리카의 뿔 지역 국가입니다." },
+      { name: "우루과이", weight: 34, flag: "🇺🇾", desc: "남미에서 높은 삶의 질과 축구 역사를 자랑하는 소국입니다." },
+      { name: "보스니아 헤르체고비나", weight: 32, flag: "🇧🇦", desc: "동서양 문화가 절묘하게 융합된 발칸반도의 국가입니다." },
+      { name: "몽골", weight: 34, flag: "🇲🇳", desc: "끝없이 펼쳐진 초원과 유목 민족의 유산을 가진 동아시아 나라입니다." },
+      { name: "아르메니아", weight: 28, flag: "🇦🇲", desc: "세계 최초로 기독교를 국교로 채택한 코카서스의 역사국입니다." },
+      { name: "자메이카", weight: 28, flag: "🇯🇲", desc: "레게 음악의 거장 보브 말리의 고향이자 육상 단거리 강국입니다." },
+      { name: "카타르", weight: 27, flag: "🇶🇦", desc: "초고층 빌딩과 초호화 자본력을 갖춘 페르시아만의 중동국입니다." },
+      { name: "알바니아", weight: 28, flag: "🇦🇱", desc: "아드리아해 연안의 숨겨진 휴양지들을 가진 발칸 국가입니다." },
+      { name: "리투아니아", weight: 27, flag: "🇱🇹", desc: "발트 3국 중 하나로 중세 역사의 흔적을 품고 있습니다." },
+      { name: "나미비아", weight: 26, flag: "🇳🇦", desc: "붉은 나미브 사막과 해안선이 어우러진 남아프리카 국가입니다." },
+      { name: "감비아", weight: 27, flag: "🇬🇲", desc: "감비아강을 따라 좁고 길게 형성된 서아프리카 국가입니다." },
+      { name: "보츠와나", weight: 26, flag: "🇧🇼", desc: "오카방고 델타와 다이아몬드 산업으로 유복한 남아프리카 국가입니다." },
+      { name: "가봉", weight: 24, flag: "🇬🇦", desc: "풍부한 석유와 광물, 울창한 열대우림을 보존한 나라입니다." },
+      { name: "레소토", weight: 23, flag: "🇱🇸", desc: "남아프리카공화국 영토 안에 둘러싸인 하늘 위의 나라입니다." },
+      { name: "슬로베니아", weight: 21, flag: "🇸🇮", desc: "블레드 호수로 유명하며 아름다운 자연을 품은 Central Europe 국가입니다." },
+      { name: "북마케도니아", weight: 21, flag: "🇲🇰", desc: "발칸반도 중앙에 위치한 다채로운 역사의 내륙국입니다." },
+      { name: "라트비아", weight: 19, flag: "🇱🇻", desc: "발트해 연안에 위치하며 아름다운 아르누보 건축물로 가득합니다." },
+      { name: "적도 기니", weight: 17, flag: "🇬🇶", desc: "아프리카 대륙에서 유일하게 스페인어를 공식 언어로 사용하는 나라입니다." },
+      { name: "트리니다드 토바고", weight: 15, flag: "🇹🇹", desc: "카리브해 연안에 위치하며 스틸팬 음악과 카니발로 유명합니다." },
+      { name: "에스토니아", weight: 13, flag: "🇪🇪", desc: "세계 최고의 전자정부 시스템과 테크 기술을 보유한 발트 국가입니다." },
+      { name: "동티모르", weight: 13, flag: "🇹🇱", desc: "21세기 최초의 신생 독립국 중 하나인 동남아의 섬나라입니다." },
+      { name: "모리셔스", weight: 13, flag: "🇲🇺", desc: "인도양의 천국이라 불리는 고급 에메랄드빛 휴양 섬나라입니다." },
+      { name: "에스와티니", weight: 12, flag: "🇸🇿", desc: "남아프리카에 위치한 전통 왕정 체제의 내륙국입니다." },
+      { name: "지부티", weight: 11, flag: "🇩🇯", desc: "홍해 입구에 위치해 전략적·지리적으로 매우 중요한 나라입니다." },
+      { name: "키프로스", weight: 12, flag: "🇨🇾", desc: "지중해 동부에 위치한 아름다운 신화와 휴양의 섬나라입니다." },
+      { name: "피지", weight: 9, flag: "🇫🇯", desc: "남태평양의 대표적인 파라다이스 휴양 섬나라입니다." },
+      { name: "부탄", weight: 8, flag: "🇧🇹", desc: "히말라야 산맥에 둘러싸인 세계 최초의 국민총행복지수 국가입니다." },
+      { name: "기도 (Guyana)", weight: 8, flag: "🇬🇾", desc: "남미 대륙 북부에 위치하며 영어권 문화와 열대우림을 가졌습니다." },
+      { name: "솔로몬 제도", weight: 7, flag: "🇸🇧", desc: "남태평양의 수많은 섬으로 이루어진 다이빙의 천국입니다." },
+      { name: "룩셈부르크", weight: 7, flag: "🇱🇺", desc: "1인당 GDP 세계 최상위권의 유복한 소규모 유럽 강국입니다." },
+      { name: "몬테네그로", weight: 6, flag: "🇲🇪", desc: "검은 산이라는 뜻을 가진 아드리아해의 아름다운 국가입니다." },
+      { name: "수리남", weight: 6, flag: "🇸🇷", desc: "남미 대륙에서 가장 작은 면적을 가진 네덜란드어권 나라입니다." },
+      { name: "카보베르데", weight: 6, flag: "🇨🇻", desc: "서아프리카 대서양 연안에 위치한 아름다운 화산 섬나라입니다." },
+      { name: "몰타", weight: 5, flag: "🇲🇹", desc: "지중해 한가운데 위치한 기사단 역사의 고풍스러운 섬나라입니다." },
+      { name: "몰디브", weight: 5, flag: "🇲🇻", desc: "인도양의 에메랄드빛 환상적인 해변을 가진 휴양 섬나라입니다." },
+      { name: "브루나이", weight: 4, flag: "🇧🇳", desc: "보르네오섬에 위치하며 풍부한 석유로 복지가 매우 뛰어난 국왕국입니다." },
+      { name: "벨리즈", weight: 4, flag: "🇧🇿", desc: "중미의 유일한 영어 사용국으로 블루홀 등 해양 생태계가 장관입니다." },
+      { name: "바하마", weight: 4, flag: "🇧🇸", desc: "카리브해의 분홍빛 모래사장으로 유명한 관광 섬나라입니다." },
+      { name: "아이슬란드", weight: 4, flag: "🇮🇸", desc: "화산, 빙하, 오로라가 공존하는 북유럽의 환상적인 섬나라입니다." },
+      { name: "바누아투", weight: 3, flag: "🇻🇺", desc: "남태평양에 위치하며 화산 폭발을 가까이서 볼 수 있는 나라입니다." },
+      { name: "바베이도스", weight: 3, flag: "🇧🇧", desc: "팝스타 리한나의 고향이자 카리브해의 동쪽 끝 섬나라입니다." },
+      { name: "상투메 프린시페", weight: 2, flag: "🇸🇹", desc: "아프리카 기니만에 위치한 작고 평화로운 섬나라입니다." },
+      { name: "사모아", weight: 2, flag: "🇼🇸", desc: "남태평양 폴리네시아 전통문화를 깊게 유지하고 있는 나라입니다." },
+      { name: "세인트루시아", weight: 2, flag: "🇱🇨", desc: "카리브해의 우뚝 솟은 두 개의 봉우리(피통산)가 유명한 곳입니다." },
+      { name: "키리바시", weight: 1, flag: "🇰🇮", desc: "태평양 한가운데 위치하며 세계에서 가장 먼저 하루를 시작하는 나라입니다." },
+      { name: "세이셸", weight: 1, flag: "🇸🇨", desc: "인도양의 낙원이라 불리는 환상적인 화강암 해변의 휴양국입니다." },
+      { name: "미크로네시아", weight: 1, flag: "🇫🇲", desc: "태평양의 수많은 작은 섬들로 구성된 국가입니다." },
+      { name: "통가", weight: 1, flag: "🇹🇴", desc: "남태평양 폴리네시아의 유일한 독립 왕국입니다." },
+      { name: "앤티가 바부다", weight: 1, flag: "🇦🇬", desc: "365개의 아름다운 해변을 자랑하는 카리브해 섬나라입니다." },
+      { name: "안도라", weight: 1, flag: "🇦🇩", desc: "피레네산맥 계곡 사이에 위치한 스키와 면세 쇼핑의 나라입니다." },
+      { name: "도미니카 연방", weight: 1, flag: "🇩🇲", desc: "카리브해의 자연 섬이라 불릴 만큼 온천과 울창한 숲이 유명합니다." },
+      { name: "세인트빈센트 그레나딘", weight: 1, flag: "🇻🇨", desc: "카리브해의 에메랄드빛 해변을 품은 섬나라입니다." },
+      { name: "마셜 제도", weight: 1, flag: "🇲🇭", desc: "태평양의 산호초 섬들로 이루어진 아름다운 국가입니다." },
+      { name: "세인트키츠 네비스", weight: 1, flag: "🇰🇳", desc: "카리브해에서 가장 면적이 작은 섬나라 중 하나입니다." },
+      { name: "모나코", weight: 1, flag: "🇲🇨", desc: "세계에서 두 번째로 작은 나라이자 화려한 카지노와 F1의 도시입니다." },
+      { name: "리히텐슈타인", weight: 1, flag: "🇱🇮", desc: "알프스산맥에 둘러싸인 작지만 풍요로운 중앙유럽의 우표 왕국입니다." },
+      { name: "산마리노", weight: 1, flag: "🇸🇲", desc: "이탈리아 영토 안에 위치한 세계에서 가장 오래된 공화국입니다." },
+      { name: "팔라우", weight: 1, flag: "🇵🇼", desc: "투명한 바다와 락 아일랜드로 유명한 스쿠버다이빙의 성지입니다." },
+      { name: "투발루", weight: 1, flag: "🇹🇻", desc: "해수면 상승으로 언론의 주목을 받는 태평양의 작은 섬나라입니다." },
+      { name: "나우루", weight: 1, flag: "🇳🇷", desc: "세계에서 가장 작은 섬나라 공화국입니다." },
+      { name: "바티칸 시국", weight: 1, flag: "🇻🇦", desc: "가톨릭 교황청이 위치한 세계에서 가장 작은 독립 국가입니다." }
+    ];
+
+    // 인생 스토리 유형 (확률적 발생)
+    const lifeStories = [
+      { text: "💎 상위 0.1%의 엄청난 자산가 가문에서 태어났습니다! 대저택에서 거주하며 어릴 때부터 자가용 전용기를 타고 세계를 누비는 화려한 삶을 살아갑니다." },
+      { text: "🚀 혁신적인 아이디어로 글로벌 테크 기업을 창업해 초대박을 쳤습니다. 영앤리치 사업가로 세계적인 주목을 받게 됩니다." },
+      { text: "🏡 소박하지만 따뜻함이 넘치는 평범한 가정에서 태어났습니다. 좋은 친구들과 소소한 행복을 누리며 안전하고 평화로운 일상을 보냅니다." },
+      { text: "🎨 천재적인 예술적 감각을 타고나 세계적으로 인정받는 아티스트가 되었습니다. 돈보다는 자아실현과 자유를 만끽합니다." },
+      { text: "🕵️‍♂️ 어둠의 세계에 발을 들이며 위험천만한 범죄 조직의 멤버로 성장했습니다. 언제 추적당할지 모르는 아슬아슬한 인생을 살아갑니다." },
+      { text: "🃏 신출귀몰한 변장술과 말재주를 가진 천재 사기꾼으로 살아갑니다. 전 세계 수사 기관의 눈을 피하며 비밀스러운 삶을 이어갑니다." },
+      { text: "🌾 공기 좋고 아름다운 시골 마을에서 농부로 살아갑니다. 직접 키운 신선한 작물들을 나누며 자연 친화적이고 느긋한 삶을 즐깁니다." },
+      { text: "⚽ 타고난 운동 신경으로 국가대표 스포츠 선수가 되었습니다. 국위선양을 하며 온 국민의 뜨거운 사랑과 응원을 받는 영웅이 됩니다." }
+    ];
+
+    // 인구 비례 확률 추첨 함수
+    function getRandomCountry() {
+      const totalWeight = countries.reduce((sum, c) => sum + c.weight, 0);
+      let randomNum = Math.random() * totalWeight;
+
+      for (let country of countries) {
+        if (randomNum < country.weight) {
+          return country;
+        }
+        randomNum -= country.weight;
+      }
+      return countries[0];
+    }
+
+    // 환생 실행 함수
+    function reincarnate() {
+      const country = getRandomCountry();
+      const story = lifeStories[Math.floor(Math.random() * lifeStories.length)];
+
+      document.getElementById('start-screen').style.display = 'none';
+      document.getElementById('result-screen').style.display = 'block';
+
+      document.getElementById('flag').textContent = country.flag;
+      document.getElementById('country-name').textContent = country.name;
+      document.getElementById('description').textContent = country.desc;
+      document.getElementById('story-content').textContent = story.text;
+    }
+  </script>
+</body>
+</html>
